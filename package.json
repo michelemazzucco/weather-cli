@@ -1,0 +1,19 @@
+{
+  "name": "weather-cli",
+  "version": "0.1.0",
+  "description": "Just another weather cli.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "weather",
+    "cli",
+    "treehouse"
+  ],
+  "author": "Michele Mazzucco <hello@michelemazzucco.it>",
+  "license": "MIT",
+  "bin": {
+    "weather": "./index.js"
+  }
+}
