@@ -15,5 +15,8 @@
   "license": "MIT",
   "bin": {
     "weather": "./index.js"
+  },
+  "dependencies": {
+    "public-ip": "^2.0.1"
   }
 }
