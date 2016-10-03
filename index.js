@@ -3,13 +3,17 @@
 const public_ip = require('public-ip')
 const https = require('https')
 
-const argv = process.argv
+//const argv = process.argv
 
 //if (argv.length > 2)
 //  console.log(argv.slice(2))
 
-let ip = ''
-public_ip.v4().then(your_ip => ip = your_ip)
+function find_ip() {
+  let ip = ''
+  public_ip.v4().then(your_ip => ip = your_ip)
+
+  return ip
+}
 
 function geolocation(ip) {
 
@@ -34,4 +38,4 @@ function geolocation(ip) {
   req.on('error', (e) => console.log(e))
 }
 
-geolocation(ip);
+geolocation(find_ip());
