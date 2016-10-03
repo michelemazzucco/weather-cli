@@ -23,19 +23,24 @@ function geolocation(ip) {
     method: 'GET'
   }
 
-  const req = https.get(opts, (response) => {
+  let pos = {}
+
+  https.get(opts, (response) => {
     let body = ''
     response.on('data', function (c) {
       body += c;
     })
     response.on('end', function () {
       let json = JSON.parse(body)
-      let position = [json.latitude, json.longitude]
-      console.log(position)
+      pos = {
+        lat: json.latitude,
+        long: json.longitude
+      }
+
+      console.log(pos)
     })
   })
-
-  req.on('error', (e) => console.log(e))
+  .on('error', (e) => console.log(e))
 }
 
-geolocation(find_ip());
+geolocation(find_ip())
