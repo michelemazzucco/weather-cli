@@ -1,46 +1,55 @@
 #!/usr/bin/env node
 
-const public_ip = require('public-ip')
 const https = require('https')
+const public_ip = require('public-ip')
 
-//const argv = process.argv
+let ip = ''
+public_ip.v4().then(your_ip => ip = your_ip)
 
-//if (argv.length > 2)
-//  console.log(argv.slice(2))
+function weather_here(lat, lon) {
+  let pos = {
+    lat: lat,
+    long: lon
+  }
 
-function find_ip() {
-  let ip = ''
-  public_ip.v4().then(your_ip => ip = your_ip)
+  let opts = {
+    host: 'api.darksky.net',
+    path: '/forecast/70c6dd8674c3516c1ffbea96553afa08/' + pos.lat + ',' + pos.long + '?units=auto'
+  }
 
-  return ip
+  var req = https.get(opts, (res) => {
+    let body = ''
+    res.on('data', function (c) {
+      body += c
+    })
+    res.on('end', function () {
+      let json = JSON.parse(body)
+      console.log(json)
+    })
+  })
+
+  req.on('error', (e) => console.log(e))
 }
 
 function geolocation(ip) {
 
   let opts = {
     host: 'freegeoip.net',
-    path: '/json/' + ip,
-    method: 'GET'
+    path: '/json/' + ip
   }
 
-  let pos = {}
-
-  https.get(opts, (response) => {
+  var req = https.get(opts, (res) => {
     let body = ''
-    response.on('data', function (c) {
-      body += c;
+    res.on('data', function (c) {
+      body += c
     })
-    response.on('end', function () {
+    res.on('end', function () {
       let json = JSON.parse(body)
-      pos = {
-        lat: json.latitude,
-        long: json.longitude
-      }
-
-      console.log(pos)
+      weather_here(json.latitude, json.longitude)
     })
   })
-  .on('error', (e) => console.log(e))
+
+  req.on('error', (e) => console.log(e))
 }
 
-geolocation(find_ip())
+geolocation(ip)
