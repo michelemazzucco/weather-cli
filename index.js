@@ -2,9 +2,27 @@
 
 const https = require('https')
 const public_ip = require('public-ip')
+const chalk = require('chalk')
 
 let ip = ''
 public_ip.v4().then(your_ip => ip = your_ip)
+
+function convert_date(d) {
+  const date = new Date(d * 1000);
+  let opts = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }
+
+  return date.toLocaleDateString('en-US', opts);
+}
+
+function print_results(today) {
+  console.log(chalk.green(convert_date(today.time)))
+  console.log(chalk.underline(today.temperature))
+}
 
 function weather_here(lat, lon) {
   let pos = {
@@ -17,18 +35,22 @@ function weather_here(lat, lon) {
     path: '/forecast/70c6dd8674c3516c1ffbea96553afa08/' + pos.lat + ',' + pos.long + '?units=auto'
   }
 
-  var req = https.get(opts, (res) => {
+  const req = https.get(opts, (res) => {
     let body = ''
-    res.on('data', function (c) {
-      body += c
+    res.on('data', (chunk) => {
+      body += chunk
     })
-    res.on('end', function () {
-      let json = JSON.parse(body)
-      console.log(json)
+    res.on('end', () => {
+      try {
+        let json = JSON.parse(body)
+        print_results(json.currently)
+      } catch (e) {
+        console.error(e)
+      }
     })
   })
 
-  req.on('error', (e) => console.log(e))
+  req.on('error', (e) => console.error(e))
 }
 
 function geolocation(ip) {
@@ -38,18 +60,22 @@ function geolocation(ip) {
     path: '/json/' + ip
   }
 
-  var req = https.get(opts, (res) => {
+  const req = https.get(opts, (res) => {
     let body = ''
-    res.on('data', function (c) {
-      body += c
+    res.on('data', (chunk) => {
+      body += chunk
     })
-    res.on('end', function () {
-      let json = JSON.parse(body)
-      weather_here(json.latitude, json.longitude)
+    res.on('end', () => {
+      try {
+        let json = JSON.parse(body)
+        weather_here(json.latitude, json.longitude)
+      } catch (e) {
+        console.error(e)
+      }
     })
   })
 
-  req.on('error', (e) => console.log(e))
+  req.on('error', (e) => console.error(e))
 }
 
 geolocation(ip)
