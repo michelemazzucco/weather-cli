@@ -24,15 +24,11 @@ function print_results(today) {
   console.log(chalk.underline(today.temperature))
 }
 
-function weather_here(lat, lon) {
-  let pos = {
-    lat: lat,
-    long: lon
-  }
+function fetch_weather(lat, lon) {
 
   let opts = {
     host: 'api.darksky.net',
-    path: '/forecast/70c6dd8674c3516c1ffbea96553afa08/' + pos.lat + ',' + pos.long + '?units=auto'
+    path: '/forecast/70c6dd8674c3516c1ffbea96553afa08/' + lat + ',' + lon + '?units=auto'
   }
 
   const req = https.get(opts, (res) => {
@@ -53,7 +49,7 @@ function weather_here(lat, lon) {
   req.on('error', (e) => console.error(e))
 }
 
-function geolocation(ip) {
+function fetch_position(ip) {
 
   let opts = {
     host: 'freegeoip.net',
@@ -68,7 +64,7 @@ function geolocation(ip) {
     res.on('end', () => {
       try {
         let json = JSON.parse(body)
-        weather_here(json.latitude, json.longitude)
+        fetch_weather(json.latitude, json.longitude)
       } catch (e) {
         console.error(e)
       }
@@ -78,4 +74,4 @@ function geolocation(ip) {
   req.on('error', (e) => console.error(e))
 }
 
-geolocation(ip)
+fetch_position(ip)
